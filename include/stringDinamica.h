@@ -6,10 +6,15 @@ typedef struct {
     size_t tamanho;
 } string;
 
+
+// Funções de instância
+
 string stringDinamica(size_t tamanho);
 string stringLiteral(const char *literal);
 
 string lerArquivo(const char *nomeArquivo);
+
+// Funções de manipulação
 
 void apagarString(string* str);
 void concatenarString(string *str, const char *adicional);

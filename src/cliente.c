@@ -28,6 +28,7 @@ int main(int argc, char *argv[]) {
         error("ERRO ao abrir socket");
     }
 
+    // Cria um servidor em um endereço e porta especificados na linha de comando
     struct sockaddr_in serv_addr;
     memset(&serv_addr, 0, sizeof(serv_addr)); 
     serv_addr.sin_family = AF_INET;          
@@ -43,6 +44,7 @@ int main(int argc, char *argv[]) {
 
     printf("Conectado ao servidor %s:%s\n", argv[1], argv[2]);
 
+    // Lê uma string, sendo ou pela linha de comando ou por entrada durante execução
     char buffer[BUFFER_SIZE];
     if (argc > 3) {
        
@@ -54,10 +56,20 @@ int main(int argc, char *argv[]) {
         buffer[strcspn(buffer, "\n")] = '\0'; 
     }
 
+    // Enviar a mensagem por meio do socket
     int n = send(sockfd, buffer, strlen(buffer), 0);
     if (n < 0) {
         error("ERRO ao enviar mensagem");
     }
+
+
+    // A resposta pode ter um número desconhecido de bytes.
+    // Para assegurar que ela seja lida integralmente, é necessário criar estruturas dinâmicas.
+    // Execute em um loop a leitura de BUFFER_SIZE bytes de uma vez, repetindo a leitura até
+    // que toda a resposta seja lida em um objeto vector_byte.
+
+    // Assim que pronto, o objeto é convertido para uma string para poder ser impressa.
+    // Não é requerido que isso ocorra, é por legibidade de código.
 
     vector_byte resposta = criarBytes(BUFFER_SIZE);
     do {

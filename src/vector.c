@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
+/// Funções de instância
+
 vector_byte criarBytes(size_t capacidade) {
       if (capacidade == 0) {
         vector_byte vec = {
@@ -56,17 +58,19 @@ vector_byte moverString(string* str) {
     return vec;
 }
 
-byte pop(vector_byte* vec) {
-    if (vec->tamanho == 0) return U'\0';
-    vec->tamanho -= 1;
-    return vec->data[vec->tamanho];
-}
-
 vector_byte copiarString(const string *str) {
     size_t tamanho = str->tamanho + 1;
     vector_byte vec = criarBytes(tamanho);
     memcpy(vec.data, str->data, tamanho);
     return vec;
+}
+
+/// Funções de manipulação
+
+byte pop(vector_byte* vec) {
+    if (vec->tamanho == 0) return U'\0';
+    vec->tamanho -= 1;
+    return vec->data[vec->tamanho];
 }
 
 void concatenarByte(vector_byte *vec, byte val) {

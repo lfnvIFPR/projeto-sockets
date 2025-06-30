@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 
+/// Funções de instância
+
 string stringDinamica(size_t tamanho) {
     if (tamanho == 0) {
         string str = {
@@ -63,6 +65,8 @@ string stringLiteral(const char *literal) {
     strcpy(str.data, literal);
     return str;
 }
+
+/// Funções de manipulação
 
 void concatenarString(string *str, const char *adicional) {
     if (str->data == NULL || adicional == NULL) return;

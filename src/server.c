@@ -13,26 +13,25 @@
 
 #define MAX_TAMANHO 4096
 
-void debugBIN(vector_byte vec, size_t tamanho_string) {
-    vector_byte str_vec = criarBytes(tamanho_string);
-    concatenarBytes(&str_vec, vec.data, str_vec.capacidade);
-    str_vec.data[tamanho_string] = '\0';
-    string copia = stringLiteral((char*) str_vec.data);
-    apagarBytes(&str_vec);
 
-    puts(obterString(copia));
-    printf("[");
-    for (size_t i = tamanho_string; i < vec.tamanho; i++) {
-        printf("U'\\%u'%s", vec.data[i], i == vec.tamanho ? "" : ", ");
-    }
-    printf("]\n");
-    
-}
 
+/**
+ * @brief Gera e retorna a resposta HTTP apropriada para uma requisição recebida.
+ *
+ * Esta função recebe uma requisição HTTP, a processa e constrói a resposta HTTP correspondente.
+ * Caso a requisão seja inválida, retorna uma resposta HTTP 400
+ *
+ * @param server Ponteiro para o struct do servidor que está processando a requisição.
+ * @param requisicao String contendo a requisição HTTP recebida.
+ * @return Um vetor de bytes contendo a resposta HTTP gerada, normalmente em texto.
+ */
 vector_byte responder(server* server, const char* requisicao) {
     char copia[MAX_TAMANHO];
     char intermediario[MAX_TAMANHO];
     
+    // Devido ao fato que strtok modifica a string e a requisição é uma
+    // const char*, é necessário copiar a requisição
+
     strcpy(copia, requisicao);
     char* linha = strtok(copia, "\r\n");
     if (linha == NULL) {
@@ -56,6 +55,11 @@ vector_byte responder(server* server, const char* requisicao) {
     
     printf("Metodo: %s\t|\tCaminho: %s\n", metodo, caminho);
     
+    // Em geral, respostas são geradas da mesma forma.
+    // Abrir o arquivo, seja por uma string ou por um vetor
+    // Formatar o cabeçalho com as informações necessárias
+    // E concatenar o arquivo ao cabeçalho
+
     if (strcmp("GET", metodo) == 0) {
         puts("Respondendo método GET...");
         char* cabecalhoHTTP = 
@@ -107,6 +111,15 @@ vector_byte responder(server* server, const char* requisicao) {
     return moverString(&resp);
 }
 
+
+/**
+ * @brief Prepara o servidor descrito a receber requisições.
+ *
+ * Esta função incializa a capacidade de receber requisições do servidor.
+ * A resposta é emitida aqui, mas gerada em responder().
+ *
+ * @param server Ponteiro para a estrutura do servidor que será inicializada.
+ */
 void iniciar(server *server) {
     char buffer[MAX_TAMANHO];
 
@@ -130,6 +143,8 @@ void iniciar(server *server) {
     }
 }
 
+
+// Essa função lê a pagina padrão do servidor.
 void ler_index(struct server *server, const char *nomeArquivo) {
     if (server->index_html.data != NULL) {
         apagarString(&server->index_html);
@@ -137,6 +152,16 @@ void ler_index(struct server *server, const char *nomeArquivo) {
     server->index_html = lerArquivo(nomeArquivo);
 }
 
+/**
+ * @brief Cria e inicializa uma estrutura de servidor com os parâmetros especificados.
+ *
+ * Esta função configura um servidor TCP, inicializando seus campos, criando o socket,
+ * configurando opções, vinculando à porta e colocando-o em modo de escuta.
+ *
+ * @param ip_ver Versão do protocolo IP (AF_INET para IPv4, AF_INET6 para IPv6).
+ * @param porta Porta na qual o servidor irá escutar.
+ * @return Estrutura server inicializada com valores.
+ */
 server criarServer(int ip_ver, int porta) {
     server sv = {
         .ip_ver = ip_ver,
